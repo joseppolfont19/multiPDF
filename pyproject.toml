@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "archive-pdf-toolkit"
+version = "5.0.0"
+description = "Batch conversion of digitised archival images into verified, bookmarked PDFs"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Josep Pol i Font" }]
+keywords = ["pdf", "archives", "digitisation", "batch-processing", "ocr-ready"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Utilities",
+    "Intended Audience :: Information Technology",
+]
+
+dependencies = [
+    "pillow>=10.0",
+    "pypdf>=4.0",
+    "psutil>=5.9",
+]
+
+[project.optional-dependencies]
+gui = [
+    "customtkinter>=5.2",
+    "PyMuPDF>=1.23",
+]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.4",
+]
+
+[project.scripts]
+archivepdf = "archivepdf.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
