@@ -21,24 +21,27 @@ _NUMERIC_RE = re.compile(r"\d+(?:-\d+)*")
 
 
 def natural_sort_key(name: str) -> list[tuple[int, object]]:
-    """Sort key reproducing Windows Explorer ordering.
-
-    Splits a name into numeric and non-numeric tokens so that digits compare
-    as numbers, and understands compound folio numbers such as ``12-15``.
-    Tokens starting with a hyphen are pushed after their bare counterpart,
-    which keeps ``foo`` before ``foo-bis``.
-
-    >>> sorted(["img10.jpg", "img2.jpg"], key=natural_sort_key)
-    ['img2.jpg', 'img10.jpg']
     """
-    key: list[tuple[int, object]] = []
-    for part in _TOKEN_RE.findall(name):
-        if _NUMERIC_RE.fullmatch(part):
-            key.append((0, tuple(int(x) for x in part.split("-"))))
-        elif part.startswith("-"):
-            key.append((1, part.lower()))
-        else:
-            key.append((0, part.lower()))
+    Clau d'ordenació que replica el comportament de Windows Explorer.
+    1. Separa números de text de forma estricta.
+    2. Prioritza el guió baix '_' sobre el guió '-'.
+    3. Tracta els números com a enters per a l'ordenació natural.
+    """
+    # El "truc": Substituïm temporalment el '_' per un espai o caràcter 
+    # que en ASCII vagi ABANS que el '-' (el '-' és el 45, l'espai és el 32).
+    # Això força a Windows a posar "SP_" abans que "SP-".
+    s_modified = s.lower().replace('_', ' ')
+    
+    key = []
+    # Fem split mantenint els números: 'SP 1881' -> ['SP ', '1881', '']
+    for part in re.split(r'(\d+)', s_modified):
+        if part.isdigit():
+            # (0, valor) indica que és un número (prioritat per davant de text si cal)
+            key.append((0, int(part)))
+        elif part:
+            # (1, text) indica que és text
+            key.append((1, part))
+            
     return key
 
 
